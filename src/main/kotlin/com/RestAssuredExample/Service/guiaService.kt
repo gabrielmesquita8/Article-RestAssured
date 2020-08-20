@@ -108,6 +108,8 @@ class guiaService (
 
     }
 
+//Método que verifica a existência do ID na aplicação
+
     private fun validateGuia(id: Long): Boolean
     {
         if(guiaRepository.existsById(id))

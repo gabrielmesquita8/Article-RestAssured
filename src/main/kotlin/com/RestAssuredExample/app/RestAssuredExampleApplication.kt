@@ -1,4 +1,4 @@
-package com.RestAssuredExample.integrationTests
+package com.RestAssuredExample.app
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.boot.autoconfigure.domain.EntityScan
