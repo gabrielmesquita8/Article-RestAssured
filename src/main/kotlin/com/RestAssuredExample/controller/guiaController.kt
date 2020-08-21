@@ -10,7 +10,9 @@ import com.RestAssuredExample.service.guiaService
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.util.*
-
+/*
+Classe que possui os endpoint que irão executar as operações de nossa API.
+ */
 @RestController
 @RequestMapping("/turismo")
 class PSController(private val guiaRepository: guiaRepository, private val guiaService: guiaService)
@@ -20,7 +22,7 @@ class PSController(private val guiaRepository: guiaRepository, private val guiaS
             guiaService.getAllGuias()
 
     @GetMapping("/idGuia/{id}")
-    fun getById(@PathVariable id: Long): ResponseEntity<Optional<turismo>>
+    fun getById(@PathVariable id: Long): ResponseEntity<turismo>
     {
         val guia = guiaService.getGuiaById(id)
         return ResponseEntity.ok(guia)

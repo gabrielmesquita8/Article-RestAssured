@@ -13,7 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody
 import java.util.*
 import javax.persistence.EntityNotFoundException
 
-
+/*
+Classe que realiza as validações de nossos endpoints, como por exemplo validar se o dado inserido foi nulo ou está vazio
+Ele também realiza os principais métodos que permite a inserção no banco e outros métodos de uma API
+ */
 @Service
 class guiaService (
         @Autowired
@@ -25,10 +28,11 @@ class guiaService (
         return guiaRepository.findAll()
     }
 
-    fun getGuiaById(id: Long) : Optional<turismo>
+    fun getGuiaById(id: Long) : turismo
     {
-        validateGuia(id)
-        return guiaRepository.findById(id)
+        return guiaRepository.findById(id).orElseThrow {
+            EntityNotFoundException()
+        }
     }
 
     @Transactional
@@ -53,7 +57,6 @@ class guiaService (
     fun UpdateName(@PathVariable(value = "id") id: Long,
                    @RequestBody newNome: turismo): ResponseEntity<turismo>
     {
-        validateGuia(id)
         return guiaRepository.findById(id).map { tag ->
             val updateNome: turismo = tag
                     .copy(nome = newNome.nome)
@@ -62,30 +65,24 @@ class guiaService (
                 throw Exception()
             }
             ResponseEntity.ok().body(guiaRepository.save(updateNome))
-        }.orElse(ResponseEntity.notFound().build())
+        }.orElseThrow { EntityNotFoundException() }
     }
 
     @Transactional
     fun UpdateGenero(@PathVariable(value = "id") id: Long,
                      @RequestBody newG: turismo): ResponseEntity<turismo>
     {
-        validateGuia(id)
         return guiaRepository.findById(id).map { tag ->
             val updateG: turismo = tag
                     .copy(genero = newG.genero)
-            if (newG.genero.trim().isEmpty() )
-            {
-                throw Exception()
-            }
             ResponseEntity.ok().body(guiaRepository.save(updateG))
-        }.orElse(ResponseEntity.notFound().build())
+        }.orElseThrow { EntityNotFoundException() }
     }
 
     @Transactional
     fun UpdatePonto(@PathVariable(value = "id") id: Long,
                     @RequestBody newPonto: turismo): ResponseEntity<turismo>
     {
-        validateGuia(id)
         return guiaRepository.findById(id).map { tag ->
             val updatePonto: turismo = tag
                     .copy(pontoturistico = newPonto.pontoturistico)
@@ -94,32 +91,16 @@ class guiaService (
                 throw Exception()
             }
             ResponseEntity.ok().body(guiaRepository.save(updatePonto))
-        }.orElse(ResponseEntity.notFound().build())
+        }.orElseThrow { EntityNotFoundException() }
     }
 
     @DeleteMapping("/delGuia/{id}")
     fun deleteGuia(@PathVariable(value = "id") id: Long): ResponseEntity<Void>
     {
-        validateGuia(id)
         return guiaRepository.findById(id).map { play  ->
             guiaRepository.delete(play)
             ResponseEntity<Void>(HttpStatus.OK)
-        }.orElse(ResponseEntity.notFound().build())
+        }.orElseThrow { EntityNotFoundException() }
 
     }
-
-//Método que verifica a existência do ID na aplicação
-
-    private fun validateGuia(id: Long): Boolean
-    {
-        if(guiaRepository.existsById(id))
-        {
-            return true
-        }
-        else
-        {
-            throw EntityNotFoundException("Player com $id não encontrado")
-        }
-    }
-
 }

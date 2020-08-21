@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.web.server.LocalServerPort
 import io.restassured.RestAssured.*
-import io.restassured.config.EncoderConfig
-import io.restassured.http.ContentType
 import org.springframework.http.HttpStatus.OK
 import org.apache.http.entity.ContentType.APPLICATION_JSON
 import org.assertj.core.api.Assertions.assertThat
@@ -15,9 +13,13 @@ import org.hamcrest.Matchers.*
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
 
+/*
+Essa é a classe que nos interessa, nela realizaremos todos os testes que envolvem a integração com nosso  banco de dados.
+ */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = [RestAssuredExampleApplication::class])
 class ControllerTest {
 
+    // Injeção de dependência
     @Autowired
     private lateinit var repository: guiaRepository
     private val ENDPOINT: String = "/turismo"
@@ -88,7 +90,7 @@ class ControllerTest {
 
     @Test
     fun `Quando realiza uma operação PATCH para alterar o nome com dados corretos a operação deve ser executada com sucesso`() {
-        val value = mapOf("nome" to "Matheus Oliveira")
+        val value = mapOf("nome" to "Matheus Oliveira") // mapeando nosso JSON para alterarmos o campo
         val id: Long = 1
         val before = repository.findById(id)
         val payload = com.fasterxml.jackson.databind.ObjectMapper().writer().withDefaultPrettyPrinter().writeValueAsString(value)
@@ -173,13 +175,13 @@ class ControllerTest {
             .get("$ENDPOINT/idGuia/$id")
             .then()
             .log().all()
-            .statusCode(HttpStatus.BAD_REQUEST.value())
+            .statusCode(HttpStatus.NOT_FOUND.value())
             .spec(
                 expect()
                     .header("content-type", `is`(("application/json")))
                     .body("timestamp", `is`(not(emptyOrNullString())))
-                    .body("status", `is`(equalTo(HttpStatus.BAD_REQUEST.value())))
-                    .body("message", hasItem("O Id buscado não existe ou não foi possível realizar a operação devido a sintaxe"))
+                    .body("status", `is`(equalTo(HttpStatus.NOT_FOUND.value())))
+                    .body("message", hasItem("O Id buscado não existe!"))
             )
     }
 
@@ -207,7 +209,7 @@ class ControllerTest {
                     .header("content-type", `is`(("application/json")))
                     .body("timestamp", `is`(not(emptyOrNullString())))
                     .body("status", `is`(equalTo(HttpStatus.BAD_REQUEST.value())))
-                    .body("message", hasItem("O Id buscado não existe ou não foi possível realizar a operação devido a sintaxe"))
+                    .body("message", hasItem("Ocorreu um erro em sua requisição, verifique sua sintaxe!"))
             )
 
         val after = repository.findById(id)
@@ -239,7 +241,7 @@ class ControllerTest {
                         .header("content-type", `is`(("application/json")))
                         .body("timestamp", `is`(not(emptyOrNullString())))
                         .body("status", `is`(equalTo(HttpStatus.BAD_REQUEST.value())))
-                        .body("message", hasItem("O Id buscado não existe ou não foi possível realizar a operação devido a sintaxe"))
+                        .body("message", hasItem("Ocorreu um erro em sua requisição, verifique sua sintaxe!"))
                 )
 
         val after = repository.findById(id)

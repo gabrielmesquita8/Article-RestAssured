@@ -4,6 +4,7 @@ import com.sun.istack.NotNull
 import javax.persistence.*
 
 //data class automaticamente gera toString, equals e hash
+//Classe que representa o modelo de nossa tabela no banco de dados.
 @Entity
 @Table(name="turismo")
 data class turismo(
