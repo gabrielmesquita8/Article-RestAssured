@@ -29,8 +29,8 @@ class ControllerTest {
 
     @Test
     fun `Dado que a operação seja um sucesso é retornado uma lista com todos os guias turísticos`() {
-        val findBD = repository.findAll()
-        val findAPI = given()
+        val before = repository.findAll()
+        val after = given()
                 .port(port)
                 .log().all()
                 .`when`()
@@ -44,14 +44,14 @@ class ControllerTest {
                         .body("$", not(emptyOrNullString()))
                 )
                 .extract().body().jsonPath().getList(".", turismo::class.java)
-        assertThat(findAPI).isEqualTo(findBD)
+        assertThat(after).isEqualTo(before)
     }
 
     @Test
     fun `Dado que a operação seja um sucesso é retornado um guia turístico de acordo com o ID`() {
         val id: Long = 1
-        val findBD = repository.findById(id)
-        val findAPI = given()
+        val before = repository.findById(id)
+        val after = given()
                 .port(port)
                 .log().all()
                 .`when`()
@@ -61,7 +61,7 @@ class ControllerTest {
                 .statusCode(OK.value())
                 .extract().`as`(turismo::class.java)
 
-        assertThat(findAPI).isEqualTo(findBD.get())
+        assertThat(after).isEqualTo(before.get())
     }
 
     @Test
